@@ -20,7 +20,25 @@ class cvmfs::install (
   $cvmfs_version = $cvmfs::cvmfs_version,
   $cvmfs_cache_base = $cvmfs::cvmfs_cache_base,
   $cvmfs_yum_manage_repo = $cvmfs::cvmfs_yum_manage_repo,
+  $cvmfs_manual_user = $cvmfs::cvmfs_manual_user,
+  $cvmfs_uid = $cvmfs::cvmfs_uid,
+  $cvmfs_gid = $cvmfs::cvmfs_gid,
 ) inherits cvmfs {
+
+  if cvmfs_manual_user {
+    group { "cvmfs":
+      ensure => present,
+      gid    => $gid,
+    }
+
+    user { "cvmfs":
+      ensure     => present,
+      uid        => $uid,
+      gid        => $gid,
+      managehome => true,
+      require    => Group["cvmfs"],
+    }
+  }
 
   if $cvmfs_yum_manage_repo {
     class{'::cvmfs::yum':}
